@@ -58,7 +58,7 @@
                 <v-form>
                     <v-row>
                         <v-col md="12">
-                            <!-- <v-img src="/favicon.ico"></v-img> -->
+                            <v-img src="/LOGO.png" width="90"></v-img>
                         </v-col>
                     </v-row>
                     <v-row>

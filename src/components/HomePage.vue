@@ -105,7 +105,7 @@
         <v-row justify="centre">
             <v-col md="4"> 
             <v-card>
-                    <v-img src="/news3.jpg" cover></v-img>
+                    <v-img src="/Mark.jpg" cover></v-img>
                     <v-card-title>Mark Headcoach</v-card-title>
                     <v-card-text>Mark (Headcoach) has three decades of experience and has transformed countless people into fit champions.</v-card-text>
                     <v-btn color="#EF237F">View Profile</v-btn>
@@ -113,12 +113,68 @@
       </v-col>
            <v-col md="4">
             <v-card>
-                    <v-img src="/news3.jpg" cover></v-img>
+                    <v-img src="/Lucy.jpg" cover></v-img>
                     <v-card-title>Lucy</v-card-title>
                     <v-card-text>Lucy (coach) has 15 years of experience and has participated in several fitness tournaments and has not lost a single one!.</v-card-text>
                     <v-btn color="#EF237F">View Profile</v-btn>
              </v-card>
              </v-col>
-            </v-row>     
+            </v-row> 
+            
+             <!--News-->           
+            <h2 class="text-h4 text centre font-weight-bold mb-6">Latest News</h2>
+            <v-row justify="centre">
+                <v-col md="4"> 
+                <v-card>
+                        <v-img src="/dogwalking.jpg" cover></v-img>
+                        <v-card-title>Dog walking gains momentum</v-card-title>
+                        <v-card-text>Dog walking has been officially rebranded as a top-tier "longevity workout" for owners this year. New health data shows that owners who walk their dogs average 2,760 more steps per day than those without pets. Experts report that this consistent, moderate-intensity movement helps 87% of dog owners meet their weekly cardio goals.</v-card-text>
+                        <v-btn color="#EF237F">Read More</v-btn>
+                </v-card>
+        </v-col>
+            <v-col md="4">
+                <v-card>
+                        <v-img src="/yoga.jpg" cover></v-img>
+                        <v-card-title>Yoga as a new form of excercise!</v-card-title>
+                        <v-card-text>Yoga is no longer just a trend; it is a global health powerhouse. In 2026, the global yoga market has surged to an estimated $130 billion as millions pivot toward "longevity-focused" training. Experts report that practitioners are moving away from high-impact burnout in favor of mobility, joint health, and nervous-system regulation.</v-card-text>
+                        <v-btn color="#EF237F">Read More</v-btn>
+                </v-card>
+                </v-col>
+                </v-row> 
      </v-container>
+     <v-img
+    src="news1.jpg"
+    cover
+    class="text-white py-10"
+    :gradient="'to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.8)'"
+  >
+   <v-container class="fill-height">
+    
+    <v-row justify="center" align="center" class="mb-4">
+      <v-col cols="12" class="text-center">
+          <span class="font-weight-bold">Get in touch</span>
+          <span class="ml-4">0712 345 678 | macfitgym@gmail.com</span>
+        </v-col>        
+      </v-row>
+
+      <v-row justify="center" align="center" class="mb-6">
+      <v-col cols="12" class="text-center">
+         Opening hours - Mon-Fri: 5.00am - 9.00pm | Sat: 5.00am-6.00pm
+        </v-col>
+      </v-row>
+
+      <v-row justify="center" align="center" class="mb-10">
+      <v-col cols="12" class="text-center">
+          Location - Macfit Gym, 3rd Floor, Gateway Mall, Enterprise Road
+        </v-col>
+      </v-row>
+
+      <v-divider class="mb-4" color="white"></v-divider>
+     <v-row justify="center" align="center" class="mb-12">  
+        <v-col cols="12" class="text-caption text-center">
+            © 2025 Macfit Gym. Designed by Ryan Kimani
+        </v-col>  
+        </v-row>
+    </v-container>
+  </v-img>
 </template>
