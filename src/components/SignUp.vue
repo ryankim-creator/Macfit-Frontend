@@ -1,10 +1,14 @@
 <script setup>
- import { ref } from 'vue'
+import { ref } from 'vue'
+import { useRouter } from "vue-router";
+import {useAuth} from '../services/auth'
+
+const router = useRouter();
+const { register, loading, error } = useAuth()
 
   const rules = {
     required: value => !!value || 'Required.',
     min: v => v.length >= 8 || 'Min 8 characters',
-    // emailMatch: () => (`The email and password you entered don't match`),
     passwordMatch: () => password === confirmPassword || 'Passwords must match'
   }
 
@@ -12,42 +16,45 @@
   const show2 = ref(true)
   const password = ref(null)
 
-  const confirmPassword = ref(null)
+  const confirmPassword= ref(null)
   const show1confirm = ref(false)
 
-  //Models
-  const firstName =ref(null)
-  const lastName =ref(null)
-  const email =ref(null)
-  const phoneNumber =ref(null)
-  const gender =ref(null)
-  const dob =ref(null)
-  const gymLocation =ref(null)
+  //models
+  const firstName = ref(null)
+  const lastName = ref(null)
+  const email = ref(null)
+  const phoneNumber = ref(null)
+  const gender = ref(null)
+  const dob = ref(null)
+  const gymLocation = ref(null)
 
-  //functions
-  function signUp(){
+ const signUp = async () => {
 
-    //create user object
-    const userDetails= {
-        name: firstName.value + lastName.value,
-        email: email.value,
-        phone: phoneNumber.value,
-        gender: gender.value,
-        dob: dob.value,
-        gender: gender.value,
-        gymLocation: gymLocation.value,
-        password: password.value, 
+    loading.value = true;
+    error.value = "";
+
+    const formData = new FormData();
+    formData.append("name", firstName.value +' '+ lastName.value,);
+    formData.append("email", email.value);
+    formData.append("phoneNumber", phoneNumber.value);
+    formData.append("dob", dob.value);
+    formData.append("gender", gender.value);
+    formData.append("gymLocation", gymLocation.value);
+    formData.append("password", password.value);
+    formData.append("role_id", 4);
+
+    try {
+        await register(formData)
+    
+        // Redirect after successful signup
+        router.push('/homepage').then(() => {
+            router.go(0); // Reloads the current route
+        });
+    } catch (err) {
+        // Error is already handled by the auth service
+        console.error('Sign up failed', err)
     }
-
-    //store this data
-    try{
-        localStorage.setItem('userDetails', JSON.stringify(userDetails))
-    }
-    catch (err){
-        console.error('Sign up process failed', err)
-    }
-
-  }
+};  
 
 </script>
 
@@ -114,7 +121,7 @@
                             <div class="text-title-large font-weight-medium text-right">Date of Birth</div>
                         </v-col>
                         <v-col md="6">
-                            <v-date-input variant="outline" v-model="dob"></v-date-input>
+                            <v-date-input variant="outlined" v-model="dob"></v-date-input>
                         </v-col>
                     </v-row>
                     <v-row>                                                       <!--Gym location-->
