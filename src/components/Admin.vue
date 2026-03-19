@@ -7,9 +7,10 @@ const error = ref('')
 const loading = ref(false)
 const tab = ref(null)
 const showAddUserDialog = ref(false)
-const showAddRoleDialog = ref(false)
+const showAddRolesDialog = ref(false)
 const showAddEquipmentDialog = ref(false)
 const showEditUserDialog = ref(false)
+const roles = ref([])
 
 const rules = {
     required: value => !!value || 'Required.',
@@ -28,6 +29,7 @@ const dob =ref(null)
 const gymLocation =ref(null)
 const users = ref(null)
 const userRole = ref(null)
+const userIdNo = ref(null)
 
 //fetch data
 async function fetchUsers(){
@@ -54,7 +56,7 @@ async function addUser(){
     formData.append("dob", dob.value);
     formData.append("gender", gender.value);
     formData.append("gymLocation", gymLocation.value);
-    formData.append("role_id", userRole.value);
+    formData.append("roles_id", userRole.value);
 
    try {
       await api.post('users', formData,
@@ -71,10 +73,94 @@ async function addUser(){
    } 
 }
 
+//edit user
+function editUser(data){
+    userIdNo.value = data.id
+    fullName.value = data.name
+    userRole.value = data.roles_id
+    email.value = data.email
+    phoneNumber.value = data.phoneNumber
+    dob.value = data.dob
+    gymLocation.value = data.gymLocation
+    gender.value = data.gender
+    showEditUserDialog.value = true
+}
+async function updateUser(){
+    const formData = new FormData()
+    formData.append('name', fullName.value)
+    formData.append("email", email.value);
+    formData.append("phoneNumber", phoneNumber.value);
+    formData.append("dob", dob.value);
+    formData.append("gender", gender.value);
+    formData.append("gymLocation", gymLocation.value);
+    formData.append("roles_id", userRole.value);
+
+   try {
+      await api.put('users/' + userIdNo.value, formData,
+         { headers: { 'Authorization': `Bearer ${token}` } })
+         .then(function (response) {
+            error.value = ''
+            loading.value = false
+            close()
+            fetchUsers();
+        })
+   } catch (err) {
+      error.value = err.response?.data?.message || 'Creating screening data failed'
+      throw err
+   } 
+}
+
 //roles
-const roles = ref(null)
+//models
+const name =ref(null)
+const description =ref(null)
+// const abilities =ref(null)
+// const noOfUsers =ref(null)
+
+//fetch data
+async function fetchRole(){
+
+    try {
+        await api.get('getAllRoles', { headers: { 'Authorization': `Bearer ${token}` } })
+        .then(function (response) {
+            if(response.data){
+                roles.value = response.data
+            }
+        })
+    } catch (err) {
+        error.value = err.response?.data?.message || 'Retrieving data failed'
+        throw err
+    } 
+
+
+//add roles
+async function addRoles(){
+    const formData = new FormData()
+    formData.append("name", name.value);
+     formData.append("description", description.value);
+    // formData.append("abilities", abilities.value);
+    // formData.append("noOfUsers", noOfUsers.value);   
+
+   try {
+      await api.post('saveRole', formData,
+         { headers: { 'Authorization': `Bearer ${token}` } })
+         .then(function (response) {
+            error.value = ''
+            loading.value = false
+            close()
+            fetchRole();
+        })
+   } catch (err) {
+      error.value = err.response?.data?.message || 'Creating Role failed'
+      throw err
+   } 
+}
+}
+
+
 
 //equipment
+//model
 const equipment = ref(null)
 const equipmentName = ref(null)
 const usage = ref(null)
@@ -86,7 +172,7 @@ async function fetchEquipment(){
 
 //fetch data
     try {
-        await api.get('getEquipments', { headers: { 'Authorization': `Bearer ${token}` } })
+        await api.get('getEquipments', { headers: { 'Authorization': `Bearer ${token}` } })   
         .then(function (response) {
             if(response.data){
                 equipment.value = response.data
@@ -107,8 +193,8 @@ async function addEquipment(){
     formData.append("status", status.value);
 
     try {
-      await api.post('saveEquipment', formData,
-         { headers: { 'Authorization': `Bearer ${token}` } })
+      await api.post('saveEquipment', formData,{
+          headers: { 'Authorization': `Bearer ${token}` } })
          .then(function (response) {
             error.value = ''
             loading.value = false
@@ -126,6 +212,7 @@ function close(){
     showAddUserDialog.value = false
     showEditUserDialog.value = false
     showAddEquipmentDialog.value = false
+    showAddRolesDialog.value = false
     fullName.value = null
     firstName.value = null
     lastName.value = null
@@ -140,14 +227,20 @@ function close(){
     equipmentName.value = null
     usage.value = null
     modelNo.value = null
-    equipment.value = null
+    equipmentValue.value = null
     status.value = null
+
+    //Role
+    name.value = null
+    description.value = null
+    // abilities.value = null
+    // noOfUsers.value = null
 }
 
 onMounted(() => {
     fetchUsers();
     fetchEquipment();
-    //fetch roles
+    fetchRole();
     //fetch subscriptions
 });
 
@@ -204,7 +297,7 @@ onMounted(() => {
                                         <td>{{ item.email }}</td>
                                         <td>{{ item.phoneNumber }}</td>
                                         <td>{{ item.gender }}</td>
-                                        <td>{{ item.role }}</td>
+                                        <td>{{ item.roles }}</td>
                                         <td>{{ item.dob }}</td>
                                         <td>{{ item.gymLocation }}</td>
 
@@ -233,10 +326,10 @@ onMounted(() => {
                     <div v-if="roles==null ||roles==undefined || Object.keys(roles).length == 0" align="center">
                         <v-row>
                             <v-col cols="12" md="6" sm="12" >
-                                <div class="text-h6">No roles found</div>
+                                <div class="text-h6">No roless found</div>
                             </v-col>
                             <v-col cols="12" md="6" sm="12" >
-                                <v-btn class="ma-2" color="blue-darken-2" icon="mdi-plus" @click="showAddRoleDialog = true"></v-btn>
+                                <v-btn class="ma-2" color="blue-darken-2" icon="mdi-plus" @click="showAddRolesDialog = true"></v-btn>
                             </v-col>
                         </v-row>
                     </div>
@@ -247,17 +340,20 @@ onMounted(() => {
                                     <v-table class="border">
                                         <thead>
                                             <tr>
-                                                <th class="text-left"> Name </th>
-                                                <th class="text-left"> Abilities </th>
-                                                <th class="text-left"> No of Users </th>
+                                                <th class="text-left"> name </th>
+                                                <th class="text-left"> description </th>
+                                                <!-- <th class="text-left"> Abilities </th>
+                                                <th class="text-left"> No of Users </th> -->
+
                                                 <th class="text-center" colspan="3"> Action </th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr v-for="item in roles" :key="item.id" >
                                                 <td>{{ item.name }}</td>
-                                                <td>{{ item.abilities }}</td>
-                                                <td>{{ item.noOfUsers }}</td>
+                                                <!-- <td>{{ item.abilities }}</td>
+                                                <td>{{ item.noOfUsers }}</td> -->
+                                                 <td>{{ item.description }}</td>
                                                 <td v-if="item.deleted_at == null">
                                                     <v-btn color="primary" size="small" @click="editRole(item)"><v-icon icon="mdi-pencil" ></v-icon> Edit User</v-btn>
                                                 </td>
@@ -394,7 +490,7 @@ onMounted(() => {
                 </v-form>
             </v-dialog>
         <!-- Edit User Dialog -->
-            <v-dialog v-model="showEditUserDialog" max-width="600">
+ <v-dialog v-model="showEditUserDialog" max-width="600">
                 <v-form @submit.prevent >
                     <v-card>
                         <v-card-title class="pa-6">
@@ -407,32 +503,49 @@ onMounted(() => {
                         <v-card-text>
                             <v-row dense>
                                 <v-col >
-                                    <v-text-field label="Name" v-model="firstName" required :rules="[rules.required]"></v-text-field>
+                                    <v-text-field label="Name" v-model="fullName" required :rules="[rules.required]"></v-text-field>
                                 </v-col>
                             </v-row>
-                            <v-row dense>
+                            
+                             <v-row>
+                                <v-col md="6">
+                                    <v-text-field label="Email" v-model="email" required :rules="[rules.required]"></v-text-field>
+                                </v-col>
+                                <v-col md="6">
+                                    <v-text-field label="Phone Number" v-model="phoneNumber" required :rules="[rules.required]"></v-text-field>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col md="6">
+                                    <v-select
+                                        label="Gym Location"
+                                        :items="['CBD', 'Madaraka', 'Westlands', 'Buruburu']"
+                                        variant="outlined"
+                                        v-model="gymLocation"
+                                        ></v-select>
+                                </v-col>
+                                <v-col md="6">
+                                    <v-date-input label="Date of Birth" v-model="dob" required :rules="[rules.required]"></v-date-input>
+                                </v-col>
+                            </v-row>
+                            <v-row>
                                 <v-col cols="12" md="2" sm="6" > Role: </v-col>
                                 <v-col cols="12" md="10" sm="6">
-                                    <v-radio-group v-model="userRole" :rules="[rules.required]">
-                                        <v-row>
-                                            <v-col cols="12" md="6" sm="6" >
-                                                <v-radio label="Admin" value="2"></v-radio>
-                                            </v-col>
-                                            <v-col cols="12" md="6" sm="6" >
-                                                <v-radio label="Healthcare Provider" value="3"></v-radio>
-                                            </v-col>
-                                        </v-row>
+                                    <v-radio-group v-model="userRole" :rules="[rules.required]" inline>
+                                        <v-radio label="Admin" value="1"></v-radio>
+                                        <v-radio label="Trainer" value="2"></v-radio>
+                                        <v-radio label="Staff" value="3"></v-radio>
+                                        <v-radio label="User" value="4"></v-radio>
                                     </v-radio-group>
                                 </v-col>
                             </v-row>
-                             <v-row dense>
-                                <v-col >
-                                    <v-text-field label="Email" v-model="email" required :rules="[rules.required]"></v-text-field>
-                                </v-col>
-                            </v-row>
-                             <v-row dense>
-                                <v-col >
-                                    <v-text-field label="Phone" v-model="phoneNumber" required :rules="[rules.required]"></v-text-field>
+                            <v-row>
+                                <v-col cols="12" md="2" sm="6" > Gender: </v-col>
+                                <v-col cols="12" md="10" sm="6">
+                                    <v-radio-group v-model="gender" :rules="[rules.required]" inline>
+                                        <v-radio label="Male" value="Male"></v-radio>
+                                        <v-radio label="Female" value="Female"></v-radio>
+                                    </v-radio-group>
                                 </v-col>
                             </v-row>
                         </v-card-text>
@@ -487,4 +600,35 @@ onMounted(() => {
                     </v-card>
                 </v-form>
             </v-dialog>
+        <!-- Add Role Dialog -->
+            <v-dialog v-model="showAddRolesDialog" max-width="600">
+                <v-form @submit.prevent >
+                    <v-card>
+                        <v-card-title class="pa-6">
+                        <v-row>
+                                Add Role
+                                <v-spacer></v-spacer>
+                                <v-btn class="ma-2" color="blue-darken-2" icon="mdi-close" @click="close();"></v-btn>
+                            </v-row>
+                        </v-card-title>
+                        <v-card-text>
+                            <v-row>
+                                <v-col md="6">
+                                    <v-text-field label="name" v-model="name" required :rules="[rules.required]"></v-text-field>
+                                </v-col>
+                                 <v-col md="6">
+                                    <v-text-field label="description" v-model="description" required :rules="[rules.required]"></v-text-field>
+                                </v-col>
+                            </v-row>                   
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn text="Close" variant="plain" @click="close()" ></v-btn>
+                            <v-btn color="primary"  text="Save" variant="tonal" @click="addRoles()" ></v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-form>
+            </v-dialog>
+            
+            
 </template>
